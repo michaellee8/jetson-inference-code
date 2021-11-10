@@ -1,0 +1,2 @@
+pyserial
+git+https://github.com/michaellee8/pymata4.git@py36
