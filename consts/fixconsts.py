@@ -41,21 +41,20 @@ MIN_ANGLE = 45
 
 # Note that A and C is configured backwards
 
-FORWARD_VEC = [-1, 1, -1, 1]
+FORWARD_VEC = [-1.0, 1.0, -1.0, 1.0]
 
-BACKWARD_VEC = [1, -1, 1, -1]
+BACKWARD_VEC = [1.0, -1.0, 1.0, -1.0]
 
-ROTATE_CLOCKWISE_VEC = [1, 1, 1, 1]
+ROTATE_CLOCKWISE_VEC = [1.0, 1.0, 1.0, 1.0]
 
-ROTATE_ANTICLOCKWISE_VEC = [-1, -1, -1, -1]
+ROTATE_ANTICLOCKWISE_VEC = [-1.0, -1.0, -1.0, -1.0]
 
-LEFT_VEC = [-1, -1, 1, 1]
+LEFT_VEC = [-1.0, -1.0, 1.0, 1.0]
 
-RIGHT_VEC = [1, 1, -1, -1]
+RIGHT_VEC = [1.0, 1.0, -1.0, -1.0]
 
 
-STOP_VEC = [0, 0,
-            0, 0]
+STOP_VEC = [0.0, 0.0, 0.0, 0.0]
 
 MOTOR_NAMES = ["A", "B", "C", "D"]
 PWM_PINS = [12, 8, 9, 5]

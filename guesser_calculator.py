@@ -8,9 +8,10 @@ from .utils import Side
 # from tail of the car
 # clockwise is +, anti-clockwise is 360-
 # guessed_car_side is NONE if car not found
-# ((x_diff, y_diff, z_diff), angle_diff, guessed_car_side, timestamp)
+# ((x_diff, y_diff, z_diff), angle_diff, guessed_car_side, cam_x_diff, timestamp)
+# cam_x_diff is + for right
 GuesserCalculatorOutput = Tuple[Optional[Tuple[float,
-                                               float, float]], Optional[float], Side, int]
+                                               float, float]], Optional[float], Side, float, int]
 
 
 def x_cen(box: List[float]) -> float:
@@ -59,6 +60,8 @@ class GuesserCalculator(object):
 
             sonar_dets = [det for det in detections if det[1] == CLASS_sonic]
 
+            cam_x_diff = 0.0
+
             # make sure we know if we are using santa_det as car_det
             has_car_det = len(car_dets) > 0
             has_front_santa_det = len(front_santa_dets) > 0
@@ -80,7 +83,7 @@ class GuesserCalculator(object):
 
             # Use santa for fallback if cannot find car
             if len(car_dets) < 1 and len(both_santa_dets) < 1:
-                result = (None, 0, Side.NONE, timestamp)
+                result = (None, 0, Side.NONE, 0.0, timestamp)
                 (detections, timestamp) = yield result
                 continue
             # Select for car/santa with highest prob
@@ -92,6 +95,7 @@ class GuesserCalculator(object):
                 car_side = Side.LEFT
             else:
                 car_side = Side.RIGHT
+            cam_x_diff = x_cen(car_det) - CAM_WIDTH / 2
             guessed_car_angle = None
             if has_car_det and front_santa_det != None and abs(x_cen(front_santa_det) - x_cen(car_det)) / CAM_WIDTH < 0.15:
                 # we have the back
@@ -112,4 +116,4 @@ class GuesserCalculator(object):
             else:
                 guessed_car_angle = None
             
-            (detections, timestamp) = yield (None, guessed_car_angle, car_side, timestamp)
+            (detections, timestamp) = yield (None, guessed_car_angle, car_side, cam_x_diff, timestamp)
