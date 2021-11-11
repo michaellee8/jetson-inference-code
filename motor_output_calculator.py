@@ -74,7 +74,7 @@ class MotorOutputCalculator(object):
                 # car at camera center, very good!
                 pass
 
-            mov_vec = times_list(BACKWARD_VEC, FORWARD_COEFFICIENT * 0.6)
+            mov_vec = times_list(BACKWARD_VEC, FORWARD_COEFFICIENT * 0.5)
             # estimated_angle_diff = (
                 # self.cur_pan_angle - 90 + 30 * cam_x_diff / (CAM_WIDTH/2)) % 360.0
             estimated_angle_diff = (
@@ -84,10 +84,19 @@ class MotorOutputCalculator(object):
             # rot_vec = [0.0, 0.0, 0.0, 0.0]
             mov_vec = sum_list(mov_vec, rot_vec)
 
-        
-
-            if self.left_sonar_distance < DESIRED_DISTANCE*3/4 or self.right_sonar_distance < DESIRED_DISTANCE*3/4:
+            if self.left_sonar_distance < DESIRED_DISTANCE*1/4 or self.right_sonar_distance < DESIRED_DISTANCE*1/4:
                 print(self.left_sonar_distance, self.right_sonar_distance)
-                mov_vec = times_list(mov_vec, 0.05)
+                mov_vec = times_list(mov_vec, -0.15)
+            elif self.left_sonar_distance < DESIRED_DISTANCE*2/4 or self.right_sonar_distance < DESIRED_DISTANCE*2/4:
+                print(self.left_sonar_distance, self.right_sonar_distance)
+                mov_vec = times_list(mov_vec, -0.05)
+            elif self.left_sonar_distance < DESIRED_DISTANCE*3/4 or self.right_sonar_distance < DESIRED_DISTANCE*3/4:
+                print(self.left_sonar_distance, self.right_sonar_distance)
+                mov_vec = times_list(mov_vec, 0.2)
+            elif self.left_sonar_distance < DESIRED_DISTANCE*7/4 or self.right_sonar_distance < DESIRED_DISTANCE*5/4:
+                print(self.left_sonar_distance, self.right_sonar_distance)
+                mov_vec = times_list(mov_vec, 0.5)
+
+            
 
             (_, angle_diff, guessed_car_side, cam_x_diff, timestamp) = yield (mov_vec[0], mov_vec[1], mov_vec[2], mov_vec[3], next_pan_angle, next_tilt_angle, timestamp)
