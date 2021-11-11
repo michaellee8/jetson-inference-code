@@ -2,8 +2,10 @@ from typing import Any, Generator
 import jetson.inference
 import jetson.utils
 from typing import Generator, NewType, Any, Tuple, List
-from python.training.detection.ssd.code.consts.fixconsts import OVERLAY_FLAGS
+from ..consts.fixconsts import OVERLAY_FLAGS
 from source.camera_input import CudaImage
+
+DetectorOutput = Tuple[List[Tuple[Tuple[int, int, int, int], int, float]]], int]
 
 class TrtDetector(object):
     def __init__(self, net) -> None:
@@ -11,7 +13,7 @@ class TrtDetector(object):
         self.net = net
 
     # ([((box_x1, box_y1, box_x2, box_y2), labelId, probs)], timestamp)
-    def run(self) -> Generator[Any, Tuple[CudaImage, int], Tuple[List[Tuple[Tuple[int, int, int, int], int, float]]], int]:
+    def run(self) -> Generator[Tuple[List[Tuple[Tuple[int, int, int, int], int, float]], int], Tuple[CudaImage, int], None]:
         (cuda_img, timestamp) = yield
         while True:
             detections = self.net.Detect(cuda_img, OVERLAY_FLAGS)
