@@ -75,6 +75,8 @@ class MotorOutputCalculator(object):
                 pass
 
             mov_vec = times_list(BACKWARD_VEC, FORWARD_COEFFICIENT * 0.5)
+            # estimated_angle_diff = (
+                # self.cur_pan_angle - 90 + 30 * cam_x_diff / (CAM_WIDTH/2)) % 360.0
             estimated_angle_diff = (
                 self.cur_pan_angle - 90 + 30 * cam_x_diff / (CAM_WIDTH/2)) % 360.0 + angle_diff
             estimated_angle_diff = estimated_angle_diff / 2
@@ -84,7 +86,7 @@ class MotorOutputCalculator(object):
 
         
 
-            if self.left_sonar_distance < 20.0 or self.right_sonar_distance < 20.0:
+            if self.left_sonar_distance < DESIRED_DISTANCE or self.right_sonar_distance < DESIRED_DISTANCE:
                 print(self.left_sonar_distance, self.right_sonar_distance)
                 mov_vec = times_list(mov_vec, 0.25)
 
