@@ -9,4 +9,5 @@ while True:  # show streamed images until Ctrl-C
     cv2.putText(image, str(timestamp), (10,500), font, 1, (255,255,255), 2)
     print('received img at ', timestamp)
     cv2.imshow("image", image) # 1 window for each RPi
+    cv2.waitKey(1)
 
