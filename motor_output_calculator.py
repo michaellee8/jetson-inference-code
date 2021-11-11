@@ -2,9 +2,9 @@ from typing import Tuple
 from utils import times_list, sum_list
 
 from utils import Side
-from .consts.fixconsts import *
-from .consts.varconsts import *
-from .guesser_calculator import GuesserCalculatorOutput
+from consts.fixconsts import *
+from consts.varconsts import *
+from guesser_calculator import GuesserCalculatorOutput
 from typing import Any, Generator
 from typing import Generator, NewType, Any, Tuple, List, Optional
 from pymata4 import pymata4
@@ -34,7 +34,9 @@ class MotorOutputCalculator(object):
         (_, pin_n, dist, _) = data
         if pin_n == LEFT_SONIC_TRIG_PIN:
             self.left_sonar_distance = dist
-        elif pin_n == RIGHT_SONIC_ECHO_PIN:
+            print("sonar_left", dist)
+        elif pin_n == RIGHT_SONIC_TRIG_PIN:
+            print("sonar_right", dist)
             self.right_sonar_distance = dist
 
     def run(self) -> Generator[MotorOutputCalculatorOutput, GuesserCalculatorOutput, None]:
@@ -60,7 +62,7 @@ class MotorOutputCalculator(object):
                 mov_vec = times_list(rot_vec, NOT_SEEN_ROTATION_SPEED)
                 (_, angle_diff, guessed_car_side, cam_x_diff, timestamp) = yield (mov_vec[0], mov_vec[1], mov_vec[2], mov_vec[3], self.cur_pan_angle, self.cur_tilt_angle, timestamp)
                 continue
-
+            self.prev_seen_car = guessed_car_side
             next_pan_angle = self.cur_pan_angle
             next_tilt_angle = self.cur_tilt_angle
 
@@ -72,12 +74,18 @@ class MotorOutputCalculator(object):
                 # car at camera center, very good!
                 pass
 
-            mov_vec = times_list(FORWARD_VEC, FORWARD_COEFFICIENT * 0.5)
+            mov_vec = times_list(BACKWARD_VEC, FORWARD_COEFFICIENT * 0.5)
             estimated_angle_diff = (
                 self.cur_pan_angle - 90 + 30 * cam_x_diff / (CAM_WIDTH/2)) % 360.0 + angle_diff
             estimated_angle_diff = estimated_angle_diff / 2
-            rot_vec = times_list(ROTATE_CLOCKWISE_VEC, (estimated_angle_diff -
-                                 360 if estimated_angle_diff > 180 else estimated_angle_diff) * ROTATE_COEFFICIENT / 180)
+            rot_vec = times_list(ROTATE_CLOCKWISE_VEC, (estimated_angle_diff - 360 if estimated_angle_diff > 180 else estimated_angle_diff) * ROTATE_COEFFICIENT / 180 *  0.2)
+            # rot_vec = [0.0, 0.0, 0.0, 0.0]
             mov_vec = sum_list(mov_vec, rot_vec)
+
+        
+
+            if self.left_sonar_distance < 20.0 or self.right_sonar_distance < 20.0:
+                print(self.left_sonar_distance, self.right_sonar_distance)
+                mov_vec = times_list(mov_vec, 0.25)
 
             (_, angle_diff, guessed_car_side, cam_x_diff, timestamp) = yield (mov_vec[0], mov_vec[1], mov_vec[2], mov_vec[3], next_pan_angle, next_tilt_angle, timestamp)

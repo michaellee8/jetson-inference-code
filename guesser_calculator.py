@@ -1,9 +1,9 @@
-from .consts.fixconsts import *
-from .consts.varconsts import *
-from .detector.trt_detector import DetectorOutput
+from consts.fixconsts import *
+from consts.varconsts import *
+from detector.trt_detector import DetectorOutput
 from typing import Any, Generator
 from typing import Generator, NewType, Any, Tuple, List, Optional
-from .utils import Side
+from utils import Side
 
 # from tail of the car
 # clockwise is +, anti-clockwise is 360-
@@ -15,19 +15,19 @@ GuesserCalculatorOutput = Tuple[Optional[Tuple[float,
 
 
 def x_cen(box: List[float]) -> float:
-    return (box[0] + box[2]) / 2
+    return (box[0][0] + box[0][2]) / 2
 
 
 def y_cen(box: List[float]) -> float:
-    return (box[1] + box[3]) / 2
+    return (box[0][1] + box[0][3]) / 2
 
 
 def x_size(box: List[float]) -> float:
-    return box[0] - box[2]
+    return box[0][0] - box[0][2]
 
 
 def y_size(box: List[float]) -> float:
-    return box[1] - box[3]
+    return box[0][1] - box[0][3]
 
 
 def area(box: List[float]) -> float:
@@ -87,9 +87,8 @@ class GuesserCalculator(object):
                 (detections, timestamp) = yield result
                 continue
             # Select for car/santa with highest prob
-            car_det = max(car_dets, key=lambda d: d[2]) if len(
-                car_dets) > 0 else max(both_santa_dets, key=lambda d: d[2])
-            both_santa_det = max(both_santa_dets, key=lambda d: d[2])
+            car_det = best_det(car_dets) if len(
+                car_dets) > 0 else best_det(both_santa_dets)
             car_side = Side.NONE
             if x_cen(car_det) < CAM_WIDTH / 2:
                 car_side = Side.LEFT
@@ -114,6 +113,6 @@ class GuesserCalculator(object):
                 else:
                     guessed_car_angle = 135
             else:
-                guessed_car_angle = None
+                guessed_car_angle = 0
             
             (detections, timestamp) = yield (None, guessed_car_angle, car_side, cam_x_diff, timestamp)

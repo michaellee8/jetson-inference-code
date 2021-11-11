@@ -61,8 +61,8 @@ PWM_PINS = [12, 8, 9, 5]
 DIRA_PINS = [34, 37, 43, 58]
 DIRB_PINS = [35, 36, 42, 59]
 
-# OVERLAY_FLAGS="box,labels,conf"
-OVERLAY_FLAGS = ""
+OVERLAY_FLAGS="box,labels,conf"
+# OVERLAY_FLAGS = ""
 
 CAM_WIDTH = 1280
 CAM_HEIGHT = 720

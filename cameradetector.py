@@ -1,3 +1,5 @@
+from typing import Generator, NewType, Any, Tuple
+from utils import current_milli_time
 from typing import Any, Generator
 import jetson.inference
 import jetson.utils
@@ -7,19 +9,20 @@ from source.camera_input import CudaImage
 
 DetectorOutput = Tuple[List[Tuple[Tuple[int, int, int, int], int, float]], int]
 
-class TrtDetector(object):
-    def __init__(self, net) -> None:
+CudaImage = NewType('CudaImage', Any)
+
+class CameraDetector(object):
+    def __init__(self, vid_src, net) -> None:
         super().__init__()
+        self.vid_src = vid_src
         self.net = net
 
-    # ([((box_x1, box_y1, box_x2, box_y2), labelId, probs)], timestamp)
-    def run(self) -> Generator[Tuple[List[Tuple[Tuple[int, int, int, int], int, float]], int], Tuple[CudaImage, int], None]:
-        (cuda_img, timestamp) = yield
-        print("cudaimg", cuda_img)
+    def run(self) -> Generator[Tuple[CudaImage, int], None, None]:
+        
         while True:
-            detections = self.net.Detect(cuda_img, cuda_img.width, cuda_img.height, "none")
+            img: CudaImage = self.vid_src.Capture()
+            detections = self.net.Detect(img, img.width, img.height, "none")
             ret: List[Tuple[Tuple[int, int, int, int], int, float]] = []
             for det in detections:
                 ret.append(((det.Left, det.Top, det.Right, det.Bottom), det.ClassID, det.Confidence))
-            (cuda_img, timestamp) = yield (ret, timestamp)
-            
+            yield (ret, current_milli_time())
