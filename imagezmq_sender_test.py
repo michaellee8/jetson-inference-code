@@ -56,7 +56,7 @@ while True:
 	cv_npimg = jetson.utils.cudaToNumpy(cv_img)
 	print('sending image at ', timestamp)
 	sender.send_image(timestamp, cv_npimg)
-	time.sleep(0.5)
+	time.sleep(1)
 	# time.sleep(2.0)
 
 
