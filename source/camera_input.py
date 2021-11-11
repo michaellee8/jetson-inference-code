@@ -1,7 +1,5 @@
-from typing import Any, Generator
-import jetson.inference
-import jetson.utils
-from typing import Generator, NewType, Any
+from typing import Generator, NewType, Any, Tuple
+from utils import current_milli_time
 
 CudaImage = NewType('CudaImage', Any)
 
@@ -10,7 +8,7 @@ class CameraInput(object):
         super().__init__()
         self.vid_src = vid_src
 
-    def run(self) -> Generator[CudaImage, None, None]:
+    def run(self) -> Generator[Tuple[CudaImage, int], None, None]:
         while True:
             img: CudaImage = self.vid_src.Capture()
-            yield img
+            yield (img, current_milli_time())
