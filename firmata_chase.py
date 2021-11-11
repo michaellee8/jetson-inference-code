@@ -201,7 +201,7 @@ while True:
     img = input.Capture()
     detections = net.Detect(img, overlay=opt.overlay)
     car_dets = [det for det in detections if det.ClassID == CLASS_car]
-    if len(card_dets) != 1:
+    if len(car_dets) != 1:
         car_det = car_dets[0]
         car_center = car_det.Center
         if car_center[0] <= img.width / 2:
