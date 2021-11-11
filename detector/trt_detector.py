@@ -17,7 +17,7 @@ class TrtDetector(object):
         (cuda_img, timestamp) = yield
         print("cudaimg", cuda_img)
         while True:
-            detections = self.net.Detect(cuda_img, cuda_img.width, cuda_img.height, "none")
+            detections = self.net.Detect(cuda_img, overlay="none")
             ret: List[Tuple[Tuple[int, int, int, int], int, float]] = []
             for det in detections:
                 ret.append(((det.Left, det.Top, det.Right, det.Bottom), det.ClassID, det.Confidence))

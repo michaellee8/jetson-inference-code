@@ -67,7 +67,7 @@ for pin in PWM_PINS:
 board.set_pin_mode_servo(SERVO_PAN_PIN)
 board.set_pin_mode_servo(SERVO_TILT_PIN)
 
-Pipeline([CameraDetector(input, net).run(), GuesserCalculator().run(
+Pipeline([CameraInput(input).run(), TrtDetector(net).run(), GuesserCalculator().run(
 ), MotorOutputCalculator(board).run(), FirmataOutput(board).run()]).run_sequential()
 
 board.shutdown()
