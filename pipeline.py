@@ -48,10 +48,10 @@ class FirstPipelineThread(Thread):
             
             # Get the value from the generator.
             try:
-                msg = self.coro.next()
+                msg = next(self.coro)
             except StopIteration:
                 break
-            except Exception, exc:
+            except (Exception, exc):
                 self.out_queue.put(PipelineError(exc))
                 return
             
@@ -82,7 +82,7 @@ class MiddlePipelineThread(Thread):
 
     def run(self):
         # Prime the coroutine.
-        self.coro.next()
+        next(self.coro)
         
         while True:
             # Get the message from the previous stage.
@@ -96,7 +96,7 @@ class MiddlePipelineThread(Thread):
             # Invoke the current stage.
             try:    
                 out = self.coro.send(msg)
-            except Exception, exc:
+            except (Exception, exc):
                 self.out_queue.put(PipelineError(exc))
                 return
             
@@ -119,7 +119,7 @@ class LastPipelineThread(Thread):
 
     def run(self):
         # Prime the coroutine.
-        self.coro.next()
+        next(self.coro)
 
         while True:
             # Get the message from the previous stage.
@@ -133,7 +133,7 @@ class LastPipelineThread(Thread):
             # Send to consumer.
             try:
                 self.coro.send(msg)
-            except Exception, exc:
+            except (Exception, exc):
                 self.exc = exc
                 return
         
@@ -159,7 +159,7 @@ class Pipeline(object):
         """
         # "Prime" the coroutines.
         for coro in self.stages[1:]:
-            coro.next()
+            next(coro)
         
         # Begin the pipeline.
         for msg in self.stages[0]:

@@ -11,5 +11,6 @@ class CameraInput(object):
         self.vid_src = vid_src
 
     def run(self) -> Generator[CudaImage, None, None]:
-        img: CudaImage = self.vid_src.Capture()
-        yield img
+        while True:
+            img: CudaImage = self.vid_src.Capture()
+            yield img
