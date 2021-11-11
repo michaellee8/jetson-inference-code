@@ -8,6 +8,9 @@ import argparse
 import sys
 import time
 
+def current_milli_time():
+    return round(time.time() * 1000)
+
 # parse the command line
 parser = argparse.ArgumentParser(description="Locate objects in a live camera stream using an object detection DNN.", 
                                  formatter_class=argparse.RawTextHelpFormatter, epilog=jetson.inference.detectNet.Usage() +
@@ -32,14 +35,17 @@ input = jetson.utils.videoSource(opt.input_URI, argv=sys.argv)
 
 
 
-sender = imagezmq.ImageSender(connect_to='tcp://127.0.0.1:5555')
+sender = imagezmq.ImageSender(connect_to='tcp://*:5555', REQ_REP=False)
 
 rpi_name = socket.gethostname()
+
+print(rpi_name)
 
 print('hi')
 
 while True:
 	img = input.Capture()
+	timestamp = current_milli_time()
 
 	cv_img = jetson.utils.cudaAllocMapped(width=img.width, height=img.height, format="bgr8")
 
@@ -48,8 +54,9 @@ while True:
 	jetson.utils.cudaDeviceSynchronize()
 
 	cv_npimg = jetson.utils.cudaToNumpy(cv_img)
-	print('sending image')
-	sender.send_image(rpi_name, cv_npimg)
-	time.sleep(2.0)
+	print('sending image at ', timestamp)
+	sender.send_image(timestamp, cv_npimg)
+	time.sleep(0.5)
+	# time.sleep(2.0)
 
 
